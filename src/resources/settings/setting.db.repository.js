@@ -1,10 +1,17 @@
 const Settings = require('./setting.model');
-const { NOT_FOUND_ERROR } = require('../../errors/appErrors');
+// const { NOT_FOUND_ERROR } = require('../../errors/appErrors');
 
 const get = async userId => {
-  const setting = await Settings.findOne({ userId });
+  let setting = await Settings.findOne({ userId });
   if (!setting) {
-    throw new NOT_FOUND_ERROR('Cannot find setting');
+    // throw new NOT_FOUND_ERROR('Cannot find setting');
+    const settingDef = {
+      optional: {
+        isTranslationDisplay: true,
+        isControlsDisplay: true
+      }
+    };
+    setting = await upsert(userId, settingDef);
   }
 
   return setting;

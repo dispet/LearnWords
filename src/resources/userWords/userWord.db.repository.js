@@ -1,4 +1,5 @@
 const UserWord = require('./userWord.model');
+// eslint-disable-next-line no-unused-vars
 const { NOT_FOUND_ERROR, ENTITY_EXISTS } = require('../../errors/appErrors');
 const ENTITY_NAME = 'user word';
 const MONGO_ENTITY_EXISTS_ERROR_CODE = 11000;
@@ -19,10 +20,10 @@ const save = async (wordId, userId, userWord) => {
     return await UserWord.create(userWord);
   } catch (err) {
     if (err.code === MONGO_ENTITY_EXISTS_ERROR_CODE) {
-      throw new ENTITY_EXISTS(`such ${ENTITY_NAME} already exists`);
-    } else {
-      throw err;
+      // throw new ENTITY_EXISTS(`such ${ENTITY_NAME} already exists`);
+      return await UserWord.update(wordId, userId, userWord);
     }
+    throw err;
   }
 };
 
@@ -30,10 +31,11 @@ const update = async (wordId, userId, userWord) => {
   const updatedWord = await UserWord.findOneAndUpdate(
     { wordId, userId },
     { $set: userWord },
-    { new: true }
+    { upsert: true, new: true }
   );
   if (!updatedWord) {
-    throw new NOT_FOUND_ERROR(ENTITY_NAME, { wordId, userId });
+    // throw new NOT_FOUND_ERROR(ENTITY_NAME, { wordId, userId });
+    return UserWord.create(userWord);
   }
 
   return updatedWord;

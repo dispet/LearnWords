@@ -1,12 +1,15 @@
 const Statistics = require('./statistic.model');
-const { NOT_FOUND_ERROR } = require('../../errors/appErrors');
+// const { NOT_FOUND_ERROR } = require('../../errors/appErrors');
 
 const get = async userId => {
-  const statistic = await Statistics.findOne({ userId });
+  let statistic = await Statistics.findOne({ userId });
   if (!statistic) {
-    throw new NOT_FOUND_ERROR('Cannot find statistic');
+    // throw new NOT_FOUND_ERROR('Cannot find statistic');
+    const statisticDef = {
+      optional: {}
+    };
+    statistic = await upsert(userId, statisticDef);
   }
-
   return statistic;
 };
 
